@@ -1,17 +1,21 @@
 const express = require('express');
+const routerApi = require('./routes');
+const cors = require('cors');
+const { logErors, errorHandler, boomErrorHandler } = require('./middlewares/errorHandler');
+
 const app = express();
-const port = 3000;
+const port = process.env || 3000;
+
+app.use(express.json());
+app.use(cors());        // habilita cualuier origen
+routerApi(app);
+
+app.use(logErors);      // Encapsulan los errores de manera global se ejecutan
+app.use(boomErrorHandler);  // en ese orden y siempre van despues del routerApi(app)
+app.use(errorHandler);
 
 app.get('/', (req, res) => {
   res.send("Hola, mi server en Express esta OnLine");
-});
-
-app.get('/productos', (req, res) => {
-  res.json({
-    Nombre: "Johan Ussa",
-    Producto: "Celular",
-    Precio: 26500
-  });
 });
 
 app.listen(port, () => {
